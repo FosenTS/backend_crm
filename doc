@@ -1,0 +1,159 @@
+# API Documentation
+
+## Base URL
+```
+/api/v1
+```
+
+## Authentication
+All protected endpoints require a Bearer token in the Authorization header:
+```
+Authorization: Bearer <access_token>
+```
+
+## Authentication Endpoints
+
+### Login
+- **Endpoint:** `/auth/login`
+- **Method:** POST
+- **Description:** Authenticate user and get access/refresh tokens
+- **Request Body:**
+```json
+{
+    "username": "string",
+    "password": "string"
+}
+```
+- **Response:** 200 OK
+```json
+{
+    "access": "string",
+    "refresh": "string"
+}
+```
+
+### Register
+- **Endpoint:** `/auth/registration`
+- **Method:** POST
+- **Description:** Register a new user (requires authentication)
+- **Request Body:**
+```json
+{
+    "role_id": "integer",
+    "username": "string",
+    "password": "string"
+}
+```
+- **Response:** 201 Created
+
+### Refresh Token
+- **Endpoint:** `/auth/refresh`
+- **Method:** POST
+- **Description:** Get new access token using refresh token
+- **Request Body:**
+```json
+{
+    "refresh": "string"
+}
+```
+- **Response:** 200 OK
+```json
+{
+    "access": "string",
+    "refresh": "string"
+}
+```
+
+### Check Access
+- **Endpoint:** `/auth/access`
+- **Method:** GET
+- **Description:** Verify if access token is valid
+- **Headers:** Requires Authorization header with Bearer token
+- **Response:** 200 OK if token is valid
+
+## Orders Endpoints
+
+### Get Orders
+- **Endpoint:** `/orders/{status}`
+- **Method:** GET
+- **Description:** Get orders filtered by status
+- **URL Parameters:**
+  - `status`: Order status
+- **Query Parameters:**
+  - `phone` (optional): Filter by phone number
+  - `email` (optional): Filter by email
+- **Response:** 200 OK
+```json
+[
+    {
+        "phone": "string",
+        "email": "string",
+        "description": "string",
+        "product": {
+            "name": "string",
+            "weigth": "string",
+            "description": "string"
+        },
+        "status": "integer"
+    }
+]
+```
+
+### Create New Order
+- **Endpoint:** `/orders/new-order`
+- **Method:** POST
+- **Description:** Create a new order
+- **Request Body:**
+```json
+{
+    "phone": "string",
+    "email": "string",
+    "description": "string",
+    "productId": "string"
+}
+```
+- **Response:** 201 Created
+
+### Update Order Status
+- **Endpoint:** `/orders/order/{orderId}`
+- **Method:** POST
+- **Description:** Update order status
+- **URL Parameters:**
+  - `orderId`: ID of the order to update
+- **Request Body:**
+```json
+{
+    "status": "integer"
+}
+```
+- **Response:** 200 OK
+
+## App Endpoints
+
+### Get File
+- **Endpoint:** `/app`
+- **Method:** GET
+- **Description:** Retrieve a file
+- **Response:** File content with appropriate Content-Type header
+
+## Error Responses
+The API uses standard HTTP status codes:
+- 200: Success
+- 201: Created
+- 400: Bad Request
+- 401: Unauthorized
+- 403: Forbidden
+- 404: Not Found
+- 500: Internal Server Error
+
+## Role-Based Access
+The API implements role-based access control:
+- Director role has access to all orders
+- Other roles can only access their own orders
+
+## Notes
+1. All protected endpoints require a valid access token
+2. Access tokens expire and need to be refreshed using the refresh token
+3. The API uses JSON for request and response bodies
+4. All timestamps are in UTC
+5. File uploads/downloads use appropriate MIME types
