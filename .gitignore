@@ -1,4 +1,4 @@
 certs
 .env
 config.json
-backend_crm
+./backend_crm
